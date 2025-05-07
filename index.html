@@ -620,10 +620,10 @@
         chatItem.className = setActive ? 'chat-item active' : 'chat-item';
         chatItem.dataset.chatId = chatId;
         chatItem.dataset.ticketId = ticketId;
-        chatItem.innerHTML = `
-            <i class="fas fa-comment"></i>
-            <span>Ticket #${sanitizeHTML(ticketId)}</span>
-        `;
+        // chatItem.innerHTML = `
+        //     <i class="fas fa-comment"></i>
+        //     <span>Ticket #${sanitizeHTML(ticketId)}</span>
+        // `;
         chatHistory.prepend(chatItem);
 
         // Make all other chat items inactive if this is active
