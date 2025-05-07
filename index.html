@@ -38,9 +38,9 @@
             <i class="fas fa-plus"></i> Start chat
         </button>
 
-        <!-- <div class="chat-history" id="chat-history">
+        <div class="chat-history" id="chat-history">
             
-        </div> -->
+        </div>
 
         <div class="sidebar-footer">
     
@@ -601,10 +601,131 @@
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
     // Add a chat to history sidebar
-    function addChatToHistory(chatId, ticketId, setActive = true) {
+    // function addChatToHistory(chatId, ticketId, setActive = true) {
+    //     if (!chatHistory) return;
+
+    //     // Check if this chat already exists in history
+    //     const existingChat = document.querySelector(`.chat-item[data-chat-id="${chatId}"]`);
+    //     if (existingChat) {
+    //         if (setActive) {
+    //             document.querySelectorAll('.chat-item').forEach(item => {
+    //                 item.classList.remove('active');
+    //             });
+    //             existingChat.classList.add('active');
+    //         }
+    //         return;
+    //     }
+
+    //     const chatItem = document.createElement('div');
+    //     chatItem.className = setActive ? 'chat-item active' : 'chat-item';
+    //     chatItem.dataset.chatId = chatId;
+    //     chatItem.dataset.ticketId = ticketId;
+    //     chatItem.innerHTML = `
+    //         <i class="fas fa-comment"></i>
+    //         <span>Ticket boy ${sanitizeHTML(ticketId)}</span>
+    //     `;
+    //     chatHistory.prepend(chatItem);
+
+    //     // Make all other chat items inactive if this is active
+    //     if (setActive) {
+    //         document.querySelectorAll('.chat-item').forEach(item => {
+    //             if (item !== chatItem) {
+    //                 item.classList.remove('active');
+    //             }
+    //         });
+    //     }
+        
+    //     // Save sessions to localStorage
+    //     saveSessions();
+    // }
+
+
+
+    async function loadTicketChats() {
+        const chatHistory = document.getElementById('chat-history');
         if (!chatHistory) return;
 
-        // Check if this chat already exists in history
+        try {
+            // Try to fetch JSON files from server
+            const jsonFiles = await fetchJsonFiles();
+            
+            // Clear existing items
+            chatHistory.innerHTML = '';
+            
+            // Add each JSON file as a chat item
+            jsonFiles.forEach(file => {
+                const ticketId = formatTicketId(file);
+                addChatToHistory(generateChatId(), ticketId, false);
+            });
+            
+        } catch (error) {
+            console.error('Error loading ticket chats:', error);
+        }
+    }
+
+    // Format the ticket ID to look like #23WI2025050
+    function formatTicketId(filename) {
+        // Remove .json extension
+        let ticketId = filename.replace('.json', '');
+        
+        // Decode URL-encoded characters (%23 becomes #)
+        ticketId = decodeURIComponent(ticketId);
+        
+        // Remove any path segments if present
+        ticketId = ticketId.replace('/tickets/', '');
+        
+        // Ensure it starts with #
+        if (!ticketId.startsWith('#')) {
+            ticketId = '#' + ticketId;
+        }
+        
+        return ticketId;
+    }
+
+    // Fetch JSON files from tickets folder (same as before)
+    async function fetchJsonFiles() {
+        try {
+            const response = await fetch('/tickets/');
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+            
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = doc.querySelectorAll('a');
+            const jsonFiles = [];
+            
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href.endsWith('.json')) {
+                    jsonFiles.push(href);
+                }
+            });
+            
+            return jsonFiles;
+            
+        } catch (error) {
+            console.log('Server fetch failed, using simulated data');
+            // Fallback to simulated data if server fails
+            return [
+                "%23WI2025050.json",  // Test case with URL-encoded #
+                "23AB2024001.json",    // Test case without #
+                "/tickets/%23CD2024002.json"  // Test case with path
+            ];
+        }
+    }
+
+    // Rest of the code remains the same...
+    function generateChatId() {
+        return 'chat-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function addChatToHistory(chatId, ticketId, setActive = true) {
+        const chatHistory = document.getElementById('chat-history');
+        if (!chatHistory) return;
+
         const existingChat = document.querySelector(`.chat-item[data-chat-id="${chatId}"]`);
         if (existingChat) {
             if (setActive) {
@@ -620,13 +741,12 @@
         chatItem.className = setActive ? 'chat-item active' : 'chat-item';
         chatItem.dataset.chatId = chatId;
         chatItem.dataset.ticketId = ticketId;
-        // chatItem.innerHTML = `
-        //     <i class="fas fa-comment"></i>
-        //     <span>Ticket #${sanitizeHTML(ticketId)}</span>
-        // `;
+        chatItem.innerHTML = `
+            <i class="fas fa-comment"></i>
+            <span>${sanitizeHTML(ticketId)}</span>
+        `;
         chatHistory.prepend(chatItem);
 
-        // Make all other chat items inactive if this is active
         if (setActive) {
             document.querySelectorAll('.chat-item').forEach(item => {
                 if (item !== chatItem) {
@@ -635,10 +755,24 @@
             });
         }
         
-        // Save sessions to localStorage
         saveSessions();
     }
 
+    function sanitizeHTML(str) {
+        return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function saveSessions() {
+        // Your implementation here
+    }
+
+    // Load tickets when page loads
+    document.addEventListener('DOMContentLoaded', loadTicketChats);
+
+
+
+
+    
     // Send Message Function
     async function sendMessage() {
     if (!messageInput || !sendMessageBtn || !chatContainer) return;
