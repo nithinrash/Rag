@@ -290,6 +290,15 @@ body {
     transition: all 0.3s ease-in-out;
 }
 
+
+.ai-response {
+    font-family: 'Courier New', monospace; /* Or any font you like */
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333; /* Optional: adjust text color */
+}
+
+
 /* Add diagonal white line with increased width on left side */
 .feature-item::after {
     content: "";
