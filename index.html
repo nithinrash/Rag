@@ -15,7 +15,7 @@
         <div class="sidebar-header">
             <a href="/" class="logo-container">
                 <img src="logoda.png" alt="Winger IT Logo">
-                <h1>Winger IT Solutions</h1>
+                <h1>Winger IT</h1>
             </a>
             
         </div>
@@ -38,9 +38,9 @@
             <i class="fas fa-plus"></i> Start chat
         </button>
 
-        <div class="chat-history" id="chat-history">
-            <!-- Chat history items will be added here -->
-        </div>
+        <!-- <div class="chat-history" id="chat-history">
+            
+        </div> -->
 
         <div class="sidebar-footer">
     
@@ -60,7 +60,7 @@
          
             <div class="welcome-container" id="welcome-container">
                 <img src="logo.png" alt="Winger IT Logo" class="logo-img2">
-                <h2>Winger IT Solutions AI Support Desk</h2>
+                <h2>Winger IT AI Support Desk</h2>
                 <p>How can I help you with your IT issues today?</p>
 
                 <div class="features-grid">
@@ -576,7 +576,7 @@
                     <div class="message-avatar ai">
                         <i class="fas fa-robot"></i>
                     </div>
-                    <div class="message-content">
+                    <div class="message-content  ai-response">
                         ${formatResponse(sanitizeHTML(msg.ai))}
                         ${documentsButtonHTML}
                     </div>
@@ -779,7 +779,7 @@
             <div class="message-avatar ai">
                 <i class="fas fa-robot"></i>
             </div>
-            <div class="message-content">
+            <div class="message-content  ai-response">
                 ${formatResponse(sanitizeHTML(aiResponse))}
                 ${documentButtonHTML}
             </div>
